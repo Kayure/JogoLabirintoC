@@ -1,0 +1,1429 @@
+
+// CODIGO DESENVOLVIDO POR LUCCAS KAYURE CRISANTO 
+// ANALISE E DESENVOLVIMENTO DE SISTEMAS - IFPR CAMPUS PARANAGUÁ
+// PROGRAMAÇÃO DE COMPUTADORES
+// COM PONTUAÇÃO E PASSOS
+
+#include <stdio.h>
+#include <stdio_ext.h>
+#include <stdlib.h>
+#include <time.h>
+#include <termios.h>
+#include <unistd.h>
+#include <string.h>
+
+#define CHAO 0
+#define PAREDE 1
+#define VOCE 2
+#define PESSOA 3
+#define FALSO 4
+  
+#define LIMPARTELA "clear"
+
+
+typedef struct {
+    int admin;
+    int existe;
+    char login[20];
+    char senha[20];
+    
+} User;
+
+User usuario, usuario1, usuario2;
+
+
+int getch(void); 
+int login();
+int cadastrar();
+void menu_user(char *NomeJogador);
+void menu_admin(char *NomeJogador);
+void Escolher_dificuldade(char *NomeJogador);
+void dificuldade_facil(char *NomeJogador);
+void dificuldade_medio(char *NomeJogador);
+void dificuldade_dificil(char *NomeJogador);
+void excluir();
+void ranking(int dificuldade, int op, int passos, int pontos, char *NomeJogador);
+void apagar_ranking();
+void listar_cadastros();
+
+clock_t tempo = 0;
+ 
+
+int main(){
+
+    int opcao2;
+
+    FILE *usuarios;
+
+do{
+    int inicio, escolha, escolha0, voltar, flag, retorno;
+    
+    char movimento;
+    char jogada;  
+    char *NomeJogador;
+
+    NomeJogador = malloc(20*sizeof(char));
+
+    int passos = 0, pontos = 0, op = 0;
+
+    
+        system(LIMPARTELA);
+
+        printf("\n##################### L A B I R I N T O #####################################");
+        printf("\n");
+        printf("\n \t\t 1 - Fazer Login ");
+        printf("\n \t\t 2 - Ranking ");
+        printf("\n \t\t 3 - 🏅 Creditos  🏅 ");       
+        printf("\n \t\t 4 - Cadastrar Jogador ");
+        printf("\n \t\t 5 - 🤔 Como jogar 🤔 "); // FEITO
+        
+        printf("\n \t\t 6 - Sair \n");
+        printf("\n#############################################################################\n");
+
+        scanf("%i",&escolha0 );
+        __fpurge(stdin);
+        
+        //primeiro little & switch
+
+            if(escolha0 == 1){
+                usuarios = fopen("user.bin","rb");
+                
+                if(usuarios == NULL){
+                    
+                    printf("\n\n\t\t\t**********************************\n");
+                    printf("\t\t\tERRO!!! NAO EXISTE NENHUM CADASTRO\n");
+                    printf("\t\t\t**********************************\n");
+                    getchar();
+                    system("clear");
+                    
+                    opcao2 = 100;
+                }
+                
+                
+                else{
+                    fclose(usuarios);
+                    
+                    puts("_____________________________________________");
+                    puts("------------------- LOGIN -------------------");
+                    puts("|    Digite seu Login:                      |");
+                    printf("| > ");
+                    __fpurge(stdin);
+                    fgets(usuario1.login, 20, stdin);
+                    puts("|    Digite sua senha:                      |");
+                    printf("| > ");
+                    __fpurge(stdin);
+                    fgets(usuario1.senha, 20, stdin);
+                    puts("------------------- LOGIN -------------------");
+                    puts("_____________________________________________");
+                        
+                    retorno = login();
+                    system("clear");
+                    
+                    if(retorno == 0){
+                        opcao2 = 100;
+                    }
+                }
+            }
+
+            if(escolha0 == 2){
+                int dificuldade = 0;
+                ranking(dificuldade, op, passos, pontos, NomeJogador);
+                opcao2 = 100;
+            }
+
+            if(escolha0 == 5){
+
+                 opcao2 = 100; 
+                 system(LIMPARTELA);
+                 printf("\n*Escolha uma dificuldade no menu antes de iniciar o jogo\n\n\n");
+
+                 printf("\nNIVEL FACIL: \n");
+                 printf("\n*1 PONTO POR ESCOLHER A DIFICULDADE FÁCIL*\n");
+                 printf("\n*1 PONTO QUANDO ASSUSTAR A VITIMA*\n");                
+                 printf("\n*1 ARMADILHA PRA DESPISTAR O FANTASMA *\n");
+                 printf("\n* ASSUSTAR EM MENOS DE 50 PASSOS*\n\n\n");
+
+                 printf("\nNIVEL MÉDIO\n");
+                 printf("\n*2 PONTOS POR ESCOLHER A DIFICULDADE MÉDIA*\n");
+                 printf("\n*1 PONTO QUANDO ASSUSTAR A VITIMA*\n");                
+                 printf("\n*4 ARMADILHAS PRA DESPISTAR O FANTASMA *\n"); 
+                 printf("\n* ASSUSTAR EM MENOS DE 75 PASSOS*\n\n\n");
+
+                 printf("\nNIVEL DIFICIL\n");
+                 printf("\n*3 PONTOS POR ESCOLHER A DIFICULDADE DIFICIL*\n");
+                 printf("\n*1 PONTO QUANDO ASSUSTAR A VITIMA*\n");
+                 printf("\n*5 ARMADILHAS PRA DESPISTAR O FANTASMA *\n");
+                 printf("\n* ASSUSTAR EM MENOS DE 90 PASSOS *\n\n\n");
+
+                 
+                 
+                 printf("\n Use para se mover:\n");
+                 printf("\n\n  (W)\n(A)+(D)\n  (S)\n");
+                 printf("\nPressione ENTER para voltar\n");
+
+                 __fpurge(stdin);
+                 getchar();
+                 system(LIMPARTELA);
+            }
+
+            if(escolha0 == 3){ //CREDITOS
+
+                 opcao2 = 100; 
+                 system(LIMPARTELA);
+                 printf("\n\n JOGO DESENVOLVIDO POR: LUCCAS KAYURE CRISANTO\n");
+                 printf("\n\n IFPR PARANAGUÁ\n");
+                 printf("\n\n PROFESSOR: GIL EDUARDO DE ANDRADE\n");
+                 printf("\n\n PROGRAMAÇÃO DE COMPUTADORES - 2019\n");
+                
+                 printf("\nPressione ENTER para voltar\n");
+
+                 __fpurge(stdin);
+                 getchar();
+                 system(LIMPARTELA);
+                                 
+            }
+
+            if(escolha0 == 4){ //Cadastrar Jogador
+                                    
+                puts("__________________________________________________");
+                puts("----------------- CADASTRO ----------------------");
+                puts("|    Digite seu Login:                           |");
+                printf("| > ");
+                __fpurge(stdin);
+                fgets(usuario2.login, 20, stdin);
+                puts("|    Digite sua senha:                     	 |");
+                printf("| > ");
+                __fpurge(stdin);
+                fgets(usuario2.senha, 20, stdin);
+                puts("|   Modo?   (1 = admin)(2 = user)                |");
+                printf("| > ");
+                scanf("%i", &usuario2.admin);
+                puts("----------------- CADASTRO ----------------------");
+                puts("__________________________________________________");
+                    
+                    
+                flag = cadastrar();
+                system("clear");
+                if(flag == 1){
+                    opcao2 = 100;
+                }
+           }   
+           if(escolha0 == 6){
+               return 0; 
+                exit(1);
+           }
+
+            
+    }while(opcao2 < 0 || opcao2 > 5);
+        
+    return 0;
+}
+
+int getch(void){
+
+         struct termios oldattr, newattr;
+         int ch;
+
+         tcgetattr( STDIN_FILENO, &oldattr);
+         newattr = oldattr;
+         newattr.c_lflag &= ~( ICANON | ECHO);
+         tcsetattr( STDIN_FILENO, TCSANOW, &newattr);
+         ch = getchar();
+         tcsetattr( STDIN_FILENO, TCSANOW, &oldattr);
+
+        return ch;
+     }
+
+int login(){
+
+    FILE *usuarios = fopen("user.bin","rb");
+	char character, *NomeJogador = malloc(20*sizeof(char));
+	int flag = 0;
+	
+	rewind(usuarios);
+
+	while(fread(&usuario, sizeof(User), 1, usuarios) == 1){
+	
+		if(strcmp(usuario1.login, usuario.login) == 0 && strcmp(usuario1.senha, usuario.senha) == 0){
+			
+			if(usuario.admin == 1){
+				flag = 1;
+                strcpy(NomeJogador, usuario.login);
+                break;
+			}
+			
+			else{
+				flag  = 2;
+                strcpy(NomeJogador, usuario.login);
+                break;
+			}	
+		}	
+	}
+	
+	if(flag == 0){
+		printf("_____________________________________________\n");
+		printf("\n\n\tUSUARIO INCORRETO\n");
+		printf("_____________________________________________\n");
+		__fpurge(stdin);
+        scanf("%c", &character);
+		fclose(usuarios);
+	}
+	
+	else if(flag == 1){
+		printf("_____________________________________________\n");
+		printf("\n\n\tADMINISTRADOR AUTENTICADO\n");
+		printf("_____________________________________________\n");
+		__fpurge(stdin);
+        scanf("%c", &character);
+		fclose(usuarios);
+		menu_admin(NomeJogador);
+		
+	}
+	
+	else if(flag == 2){
+		printf("_____________________________________________\n");
+		printf("\n\n\tUSUARIO AUTENTICADO\n");
+		printf("_____________________________________________\n");
+		__fpurge(stdin);
+        scanf("%c", &character);
+		fclose(usuarios);
+		menu_user(NomeJogador);
+	}
+
+	fclose(usuarios);
+	
+	return 0;
+}
+
+int cadastrar(){
+
+    char character, *NomeJogador = malloc(20*sizeof(char));;
+	int flag = 0;
+	
+		FILE *usuarios = fopen("user.bin","a+b");
+		
+		rewind(usuarios);
+	
+		do{
+			if(strcmp(usuario2.login, usuario.login) == 0){
+				fclose(usuarios);
+				printf("[ERRO] JA EXISTE UM USUARIO COM ESSE LOGIN");
+				__fpurge(stdin);
+                scanf("%c", &character);
+				return 1;
+			}
+			
+			if(usuario2.admin == 1 && usuario.existe == 1){
+				fclose(usuarios);
+				printf("__________________________________________________\n");
+				printf("\n[ERRO] JA EXISTE UM ADMINISTRADOR AUTENTICADO\n");
+				printf("__________________________________________________\n");
+				__fpurge(stdin);
+                 scanf("%c", &character);
+				return 1;
+			}
+			
+		}while( fread(&usuario, sizeof(User), 1, usuarios) == 1);
+		
+		usuario.admin = usuario2.admin;
+		strcpy(usuario.login, usuario2.login);
+		strcpy(usuario.senha, usuario2.senha);
+        strcpy(NomeJogador, usuario.login);
+					
+		if(usuario.admin == 1){
+			printf("__________________________________________________\n");
+			printf("\n\n\tADMINISTRADOR CADASTRADO\n");
+			printf("__________________________________________________\n");
+			__fpurge(stdin);
+             scanf("%c", &character);
+			usuario.existe = 1;
+			fwrite(&usuario, sizeof(User), 1, usuarios);
+			fclose(usuarios);
+			menu_admin(NomeJogador);	
+		}
+		else{
+			printf("__________________________________________________\n");
+			printf("\n\n\tUSUARIO CADASTRADO\n");
+			printf("__________________________________________________\n");
+			__fpurge(stdin);
+            scanf("%c", &character);
+			usuario.existe = 0;
+			fwrite(&usuario, sizeof(User), 1, usuarios);
+			fclose(usuarios);
+			menu_user(NomeJogador);
+		}
+		
+		fclose(usuarios);
+	return 1;
+}
+
+void menu_user(char *NomeJogador){
+
+    int opcao_menu_user, passos = 0, pontos = 0, op = 0;
+    int dificuldade = 0;
+    char *c;
+
+    do{
+        system(LIMPARTELA);
+        //ESCOLHER DIFICULDADE DO JOGO
+        printf("\n##################### L A B I R I N T O #####################################\n");
+        printf("\n");
+        printf("\n 1 - jogar");
+        printf("\n 2 - Ranking");
+        printf("\n 3 - Sair\n");
+        printf("\n#############################################################################\n");
+
+        __fpurge(stdin);
+        scanf("%i",&opcao_menu_user);
+
+        if(opcao_menu_user == 1){
+            Escolher_dificuldade(NomeJogador);
+            opcao_menu_user = 100;
+        }
+        if(opcao_menu_user == 2){
+            ranking(dificuldade, op, passos, pontos, c);
+            opcao_menu_user = 100;
+        }
+        if(opcao_menu_user == 3){
+            break;
+        }
+
+
+    }while(opcao_menu_user < 1 || opcao_menu_user > 3);
+
+}
+void menu_admin(char *NomeJogador){
+
+    int opcao_menu_adm, passos = 0, pontos = 0, op = 0;
+    int dificuldade = 0;
+    char *c;
+
+    do{
+        system(LIMPARTELA);
+           //ESCOLHER DIFICULDADE DO JOGO
+        printf("\n##################### L A B I R I N T O #####################################\n");
+        printf("\n");
+        printf("\n 1 - Jogar");
+        printf("\n 2 - Ranking");
+        printf("\n 3 - excluir Jogador ");
+        printf("\n 4 - Listar Cadastros ");
+        printf("\n 5 - Apagar Ranking ");
+        printf("\n 6 - Sair\n");
+        printf("\n#############################################################################\n");
+
+        scanf("%i", &opcao_menu_adm);
+
+        if(opcao_menu_adm == 1){
+            Escolher_dificuldade(NomeJogador);
+            opcao_menu_adm = 100;
+        }
+        if(opcao_menu_adm == 2){
+            ranking(dificuldade, op, passos, pontos, c);
+            opcao_menu_adm = 100;
+        }
+        if(opcao_menu_adm == 3){
+            excluir();
+            opcao_menu_adm = 100;
+        }
+        if(opcao_menu_adm == 5){
+            apagar_ranking();
+            opcao_menu_adm = 100;
+        }
+        if(opcao_menu_adm == 4){
+            listar_cadastros();
+            opcao_menu_adm = 100;
+        }
+        if(opcao_menu_adm == 6){
+            break;
+        }
+
+    }while(opcao_menu_adm < 1 || opcao_menu_adm > 5);
+}
+
+void dificuldade_facil(char *NomeJogador){
+
+    char movimento;
+    char jogada;  
+
+    int Coluna_Atual = 2, Linha_Atual = 2, op = 2, dificuldade = 1;
+
+    int LinhaFacil, ColunaFacil;
+    int PontosFacil=1, PassosFacil=0;
+
+
+
+
+    int MapaFacil[10][30] = 
+    { 
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,1,1,1,0,1,1,0,1,1,1,1,1,0,0,0,1,1,0,1,1,1,1,0,1,1,
+        1,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,1,1,1,0,1,1,0,1,1,1,1,0,1,1,
+        1,0,0,1,1,1,1,0,0,1,1,0,1,1,1,0,0,0,0,0,1,1,0,1,1,1,0,0,1,1,
+        1,0,0,0,0,1,0,0,0,1,1,0,0,0,0,1,1,1,0,0,1,1,0,1,1,1,0,1,1,1,
+        1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,
+        1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,0,0,0,0,0,0,0,1,
+        1,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    };
+
+
+    system(LIMPARTELA);
+                        printf("\n\n LABIRINTO FACIL // MAXIMO 50 JOGADAS\n\n");
+    
+
+                        while ((movimento != 'x') && (movimento != 'X')) 
+                         {
+                             for (LinhaFacil=0;LinhaFacil<10;LinhaFacil++) 
+                             {
+                                 for (ColunaFacil=0;ColunaFacil<30;ColunaFacil++) 
+                                  {
+                                     if ((LinhaFacil == Linha_Atual) && (ColunaFacil == Coluna_Atual)) 
+                                      {
+                                         printf("👻");  //👻
+                                         continue;
+                                       }
+                                         if (MapaFacil[LinhaFacil][ColunaFacil] == CHAO)
+                                         printf("  ");
+                                         if (MapaFacil[LinhaFacil][ColunaFacil] == PAREDE)
+                                         printf("⬛");
+                                         if (MapaFacil[LinhaFacil][ColunaFacil] == PESSOA)
+                                         printf("😕"); 
+                                         if (MapaFacil[LinhaFacil][ColunaFacil] == FALSO)
+                                         printf("😕");                                 
+	                             }
+                                        
+                                        printf("\n");
+                             }           
+                                        __fpurge(stdin);
+                                        movimento = getch();
+                                        PassosFacil++;                                        
+                                     if(PassosFacil >= 50)
+                                      {
+                                         system(LIMPARTELA);
+                                         printf("\n##################### voce perdeu ###########################################\n");
+                                         printf("\npressione ENTER pra voltar ao menu principal\n");
+                                         __fpurge(stdin);
+                                         getch();
+                                         system(LIMPARTELA);
+                                         ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                         break;
+                                        }
+                                                    
+                                        system(LIMPARTELA);                                  
+                                                             
+
+                                     if ((movimento == 'w') || (movimento == 'W')) 
+                                     {
+                                         Linha_Atual = Linha_Atual - 1;
+                                        /* Se não for chao ou grama ele volta pra posicao anterior */
+
+                                          if (MapaFacil[Linha_Atual][Coluna_Atual] == PAREDE ) 
+                                         {
+                                             Linha_Atual = Linha_Atual + 1;
+                                             __fpurge(stdin);
+                                             movimento = getch();
+                                             PassosFacil++;
+                                             if(PassosFacil >= 50)
+                                                {
+                                                    system(LIMPARTELA);
+                                                    printf("\n##################### voce perdeu ###########################################\n");
+                                                    printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                    __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                                    break;
+                                                    }
+                                             
+                                         }
+                                          if(MapaFacil[Linha_Atual][Coluna_Atual] == PESSOA)
+                                             {
+                                                 PontosFacil++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosFacil);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosFacil);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                                 break;                                                
+                                             }
+                                     }
+
+
+                                     if ((movimento == 's') || (movimento == 'S')) 
+                                     {
+                                        Linha_Atual = Linha_Atual + 1;
+                                        /* Se não for chao ou grama ou saida ele volta pra posicao anterior */
+
+                                          if (MapaFacil[Linha_Atual][Coluna_Atual] == PAREDE)  
+                                           {
+                                                 Linha_Atual = Linha_Atual - 1;                                    
+                                                 __fpurge(stdin);
+                                                 movimento = getch();
+                                                 PassosFacil++;
+                                                 if(PassosFacil >= 50)
+                                                {
+                                                    system(LIMPARTELA);
+                                                    printf("\n##################### voce perdeu ###########################################\n");
+                                                    printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                    __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                                    break;
+                                                    }
+                                             
+                                            }
+
+                                          if(MapaFacil[Linha_Atual][Coluna_Atual] == PESSOA)
+                                           {
+                                                 PontosFacil++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosFacil);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosFacil);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                                 break;        
+                                             }
+                                     }
+
+
+                                     if ((movimento == 'd') || (movimento == 'D')) 
+                                     {
+                                        Coluna_Atual = Coluna_Atual + 1;
+                                        /* Se não for chao ou grama ou saida ele volta pra posicao anterior */
+                                            if (MapaFacil[Linha_Atual][Coluna_Atual] == PAREDE ) 
+                                            {
+                                                 Coluna_Atual = Coluna_Atual - 1;                                            
+                                                 __fpurge(stdin);
+                                                 movimento = getch();   
+                                                 PassosFacil++;    
+
+                                                 if(PassosFacil>= 50)
+                                                {   
+                                                   system(LIMPARTELA);
+                                                    printf("\n##################### voce perdeu ###########################################\n");
+                                                    printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                    __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                                    break;
+                                                    }                                      
+                                             }
+
+                                            if(MapaFacil[Linha_Atual][Coluna_Atual] == PESSOA)
+                                            {   
+                                                 PontosFacil++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosFacil);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosFacil);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                                 break;        
+                                             }
+                                     }
+
+
+                                     if ((movimento == 'a') || (movimento == 'A')) 
+                                     {
+                                            Coluna_Atual = Coluna_Atual - 1;
+                                            /* Se não for chao ou grama ou saida ele volta pra posicao anterior */
+                                            if (MapaFacil[Linha_Atual][Coluna_Atual] == PAREDE ) 
+                                             {
+                                                 Coluna_Atual = Coluna_Atual + 1;
+                                            
+                                                 __fpurge(stdin);
+                                                 movimento = getch();
+                                                 PassosFacil++;
+
+                                                 if(PassosFacil >= 50)
+                                                 {  
+                                                     system(LIMPARTELA);
+                                                     printf("\n##################### voce perdeu ###########################################\n");
+                                                     printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                     __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                                     break;
+                                                 }
+                                             
+                                             }
+                                            if(MapaFacil[Linha_Atual][Coluna_Atual] == PESSOA)
+                                            {
+                                                 PontosFacil++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosFacil);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosFacil);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosFacil, PontosFacil, NomeJogador);
+                                                 break;        
+                                             }
+                                     }
+                                   
+                         }
+}
+
+void dificuldade_medio(char *NomeJogador){
+
+
+    char movimento;
+    char jogada;  
+
+    int EscolhaDificuldade;
+    int Coluna_Atual = 2, Linha_Atual = 2, op = 2, dificuldade = 2;
+
+    int LinhaMedio, ColunaMedio;
+    int PontosMedio=2, PassosMedio=0;
+
+    int MapaMedio[20][40] = 
+    { 
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,1,
+        1,0,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1,1,0,1,0,1,1,0,1,0,1,
+        1,1,0,1,1,1,0,0,0,1,1,0,0,0,0,0,0,1,0,1,1,1,0,1,1,1,1,0,1,1,1,0,1,0,1,1,0,1,0,1,
+        1,0,0,1,1,1,1,0,0,1,1,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,4,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,1,0,0,0,1,1,0,1,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,
+        1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,
+        1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,
+        1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,
+        1,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,0,1,1,0,0,0,0,0,1,1,1,0,1,1,1,
+        1,1,0,1,0,1,1,1,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,0,0,0,0,0,1,1,1,
+        1,0,0,0,0,0,0,0,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,0,1,1,1,
+        1,0,1,1,0,1,1,1,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,1,1,1,1,1,1,0,1,1,1,
+        1,0,1,1,0,1,1,1,0,1,0,1,1,0,1,1,0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,1,1,0,1,1,1,0,0,0,0,0,0,0,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,0,1,
+        1,0,0,0,0,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,0,1,
+        1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,0,0,0,1,1,1,0,1,
+        1,1,1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,4,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,3,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,           
+    };
+
+
+PontosMedio ++;
+                                system(LIMPARTELA);
+                                printf("\n\n LABIRINTO MEDIO // MAXIMO 75 PASSOS\n\n");
+                                while ((movimento != 'x') && (movimento != 'X')) 
+                                {
+                                for (LinhaMedio=0;LinhaMedio<20;LinhaMedio++) 
+                                 {
+                                     for (ColunaMedio=0;ColunaMedio<40;ColunaMedio++) 
+                                    {   
+                                        if ((LinhaMedio == Linha_Atual) && (ColunaMedio == Coluna_Atual)) 
+                                         {
+                                             printf("👻");  //👻
+                                            continue;
+                                         }
+                                            if (MapaMedio[LinhaMedio][ColunaMedio] == CHAO)
+                                            printf("  ");
+                                            if (MapaMedio[LinhaMedio][ColunaMedio] == PAREDE)
+                                            printf("⬛");
+                                            if (MapaMedio[LinhaMedio][ColunaMedio] == PESSOA)
+                                            printf("😕");
+                                            if (MapaMedio[LinhaMedio][ColunaMedio] == FALSO)
+                                            printf("😕"); 
+                                     }
+                                         printf("\n");
+                                 }
+                                      
+                                        __fpurge(stdin);
+                                        movimento = getch();
+                                        system(LIMPARTELA); 
+                                        PassosMedio++;
+
+                            
+                                     if ((movimento == 'w') || (movimento == 'W')) 
+                                     {
+                                         Linha_Atual = Linha_Atual - 1;
+                                         /* Se não for chao ou grama ele volta pra posicao anterior */
+                                            if ((MapaMedio[Linha_Atual][Coluna_Atual] == PAREDE) ) 
+                                            {
+                                                 Linha_Atual =  Linha_Atual + 1;
+                                                 __fpurge(stdin);
+                                                 movimento = getch();
+                                                 PassosMedio++;
+
+                                                 if(PassosMedio >= 75)
+                                                {  
+                                                     system(LIMPARTELA);
+                                                     printf("\n##################### voce perdeu ###########################################\n");
+                                                     printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                     __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosMedio, PontosMedio, NomeJogador);
+                                                     break;
+                                                    }
+	     
+                                            }
+
+                                             if(MapaMedio[Linha_Atual][Coluna_Atual] == PESSOA)
+                                            {
+                                                 PontosMedio++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosMedio);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosMedio);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosMedio, PontosMedio, NomeJogador);
+                                                 break; 
+                                                
+                                            }
+                                     }
+
+
+
+                                    if ((movimento == 's') || (movimento == 'S')) 
+                                     {
+                                        Linha_Atual = Linha_Atual + 1;
+                                         /* Se não for chao ou grama ou saida ele volta pra posicao anterior */
+                                        if ((MapaMedio[Linha_Atual][Coluna_Atual] == PAREDE))
+                                         {
+                                             Linha_Atual = Linha_Atual - 1;
+                                             __fpurge(stdin);
+                                             movimento = getch();    
+                                             PassosMedio++;
+
+                                                 if(PassosMedio >= 75)
+                                                {  
+                                                     system(LIMPARTELA);
+                                                     printf("\n##################### voce perdeu ###########################################\n");
+                                                     printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                     __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosMedio, PontosMedio, NomeJogador);
+                                                     break;
+                                                    }
+                                         }
+                                         if((MapaMedio[Linha_Atual][Coluna_Atual] == PESSOA))
+                                            {
+                                                {
+                                                 PontosMedio++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosMedio);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosMedio);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosMedio, PontosMedio, NomeJogador);
+                                                 break; 
+                                                
+                                            }                                                
+                                            }
+                                     }
+
+
+                                     if ((movimento == 'd') || (movimento == 'D')) 
+                                     {
+                                         Coluna_Atual = Coluna_Atual + 1;
+                                         /* Se não for chao ou grama ou saida ele volta pra posicao anterior */
+                                         if ((MapaMedio[Linha_Atual][Coluna_Atual] == PAREDE))
+                                         {
+                                             Coluna_Atual = Coluna_Atual - 1;
+                                             __fpurge(stdin);
+                                             movimento = getch();
+                                             PassosMedio++;
+
+                                                 if(PassosMedio >= 75)
+                                                 {  
+                                                     system(LIMPARTELA);
+                                                     printf("\n##################### voce perdeu ###########################################\n");
+                                                     printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                     __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosMedio, PontosMedio, NomeJogador);
+                                                     break;
+                                                    }
+	 
+                                         }
+                                            if((MapaMedio[Linha_Atual][Coluna_Atual] == PESSOA))
+                                            {
+                                                
+                                                 PontosMedio++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosMedio);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosMedio);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosMedio, PontosMedio, NomeJogador);
+                                                 break;                                                                           
+                                            }
+                                     }
+
+
+                                     if ((movimento == 'a') || (movimento == 'A')) 
+                                     {
+                                          Coluna_Atual = Coluna_Atual - 1;
+                                         /* Se não for chao ou grama ou saida ele volta pra posicao anterior */
+                                          if ((MapaMedio[Linha_Atual][Coluna_Atual] == PAREDE)) 
+                                           {   
+                                             Coluna_Atual = Coluna_Atual + 1;
+                                             __fpurge(stdin);
+                                             movimento = getch();	  
+                                             PassosMedio++;
+
+                                                 if(PassosMedio >= 75)
+                                                {  
+                                                     system(LIMPARTELA);
+                                                     printf("\n##################### voce perdeu ###########################################\n");
+                                                     printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                     __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosMedio, PontosMedio, NomeJogador);
+                                                     break;
+                                                    }
+                                          }
+                                          if((MapaMedio[Linha_Atual][Coluna_Atual] == PESSOA))
+                                            {
+                                                
+                                                 PontosMedio++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosMedio);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosMedio);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosMedio, PontosMedio, NomeJogador);
+                                                 break; 
+                                                
+                                                                                          
+                                            }
+                                     } 
+
+                         }
+   
+                     } 
+
+void dificuldade_dificil(char *NomeJogador){
+    
+
+    char movimento;
+    char jogada;
+
+    int Coluna_Atual = 2, Linha_Atual = 2, op = 2, dificuldade = 3;
+
+    int LinhaDificil, ColunaDificil;
+    int PontosDificil=3, PassosDificil=0;
+
+    int MapaDificil[30][40] = 
+    { 
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,1,
+        1,0,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1,1,0,1,0,1,1,0,1,0,1,
+        1,1,0,1,1,1,0,0,0,1,1,0,0,0,0,0,0,1,0,1,1,1,0,1,1,1,1,0,1,1,1,0,1,0,1,1,0,1,0,1,
+        1,0,0,1,1,1,1,0,0,1,1,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,1,0,0,0,1,1,0,1,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,
+        1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,
+        1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,1,
+        1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,
+        1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,
+        1,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,0,1,1,0,0,0,0,0,1,1,1,0,1,1,1,
+        1,1,0,1,0,1,1,1,1,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,0,0,0,0,0,1,1,1,
+        1,4,0,0,0,0,0,0,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,0,1,1,1,
+        1,0,1,1,0,1,1,1,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,1,1,1,1,1,1,0,1,1,1,
+        1,0,1,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,4,1,
+        1,0,1,1,0,1,1,1,0,0,0,0,0,0,0,1,0,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,0,1,
+        1,0,0,0,0,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,0,1,
+        1,1,1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1,0,0,0,1,1,1,0,1,
+        1,1,1,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,
+        1,1,0,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,1,1,0,0,0,0,1,0,0,1,0,1,1,0,0,0,0,1,1,1,0,1,
+        1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,1,
+        1,0,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1,1,0,1,0,1,1,0,1,0,1,
+        1,1,0,1,1,1,0,0,0,1,1,0,0,0,0,0,0,1,0,1,1,1,0,1,1,1,1,0,1,1,1,0,1,0,1,1,0,1,0,1,
+        1,0,0,1,1,1,1,0,0,1,1,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,0,0,0,1,0,0,0,1,1,0,1,1,1,0,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,
+        1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,
+        1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+        1,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,0,0,1,
+        1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,4,0,0,0,0,0,0,0,1,1,0,1,1,1,0,1,1,1,0,0,3,1,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,          
+     };
+
+    PontosDificil ++;
+                         system(LIMPARTELA);
+                         printf("\n\n LABIRINTO DIFICIL // MAXIMO 90 PASSOS\n\n");                            
+                         
+                         while ((movimento != 'x') && (movimento != 'X')) 
+                         {                                 
+                                
+                            for (LinhaDificil=0;LinhaDificil<30;LinhaDificil++) 
+                            {
+                                for (ColunaDificil=0;ColunaDificil<40;ColunaDificil++) 
+                                {
+                                 if ((LinhaDificil == Linha_Atual) && (ColunaDificil == Coluna_Atual)) 
+                                  {
+                                     printf("👻");  //👻
+                                     continue;
+                                 }
+                                        if (MapaDificil[LinhaDificil][ColunaDificil] == CHAO)
+                                        printf("  ");
+                                        if (MapaDificil[LinhaDificil][ColunaDificil] == PAREDE)
+                                        printf("⬛");
+                                        if (MapaDificil[LinhaDificil][ColunaDificil] == PESSOA)
+                                        printf("😕");
+                                         if (MapaDificil[LinhaDificil][ColunaDificil] == FALSO)
+                                         printf("😕"); 
+	    
+                                 }
+                                    printf("\n");
+                             }                                     
+
+                                        __fpurge(stdin);
+                                        movimento = getch();
+                                        PassosDificil++;
+
+                                        if(PassosDificil >= 90)
+                                            {
+                                                    system(LIMPARTELA);
+                                                    printf("\n##################### voce perdeu ###########################################\n");
+                                                    printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                    __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                    ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                     break;
+                                                    }
+                                                                        
+                                if ((movimento == 'w') || (movimento == 'W')) 
+                                 {
+                                    Linha_Atual = Linha_Atual - 1;
+                                    /* Se não for chao ou grama ele volta pra posicao anterior */                                }   
+                                    if ((MapaDificil[Linha_Atual][Coluna_Atual] == PAREDE))
+                                     { 
+                                         Linha_Atual =  Linha_Atual + 1;
+                                         __fpurge(stdin);
+                                         movimento = getch();
+                                         PassosDificil++;
+
+                                        if(PassosDificil >= 90)
+                                            {
+                                                    system(LIMPARTELA);
+                                                    printf("\n##################### voce perdeu ###########################################\n");
+                                                    printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                    __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                    break;
+                                                    }
+                                    }  
+                                    if((MapaDificil[Linha_Atual][Coluna_Atual] == PESSOA))
+                                     {     
+                                         PontosDificil++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosDificil);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosDificil);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                 break; 
+                                                
+                                     }     
+                 
+                                 if ((movimento == 's') || (movimento == 'S')) 
+                                 {
+                                    Linha_Atual = Linha_Atual + 1;
+                                    /* Se não for chao ou grama ou saida ele volta pra posicao anterior */                                 }
+                                     if ((MapaDificil[Linha_Atual][Coluna_Atual] == PAREDE))
+                                    {
+                                         Linha_Atual = Linha_Atual - 1;
+                                         __fpurge(stdin);
+                                          movimento = getch();
+                                          PassosDificil++;
+
+                                        if(PassosDificil >= 90)
+                                            {
+                                                    system(LIMPARTELA);
+                                                    printf("\n##################### voce perdeu ###########################################\n");
+                                                    printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                    __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                     break;
+                                                    }
+                                    }   
+                                    if((MapaDificil[Linha_Atual][Coluna_Atual] == PESSOA))
+                                    {      
+                                         PontosDificil++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosDificil);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosDificil);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                 break; 
+                                                
+                                     }                                            
+                                                                 
+                                if ((movimento == 'd') || (movimento == 'D')) 
+                                {
+                                    Coluna_Atual = Coluna_Atual + 1;
+                                    /* Se não for chao ou grama ou saida ele volta pra posicao anterior */
+                                     if ((MapaDificil[Linha_Atual][Coluna_Atual] == PAREDE))
+                                    { 
+                                         Coluna_Atual = Coluna_Atual - 1;
+                                         __fpurge(stdin);
+                                         movimento = getch();
+                                         PassosDificil++;
+
+                                        if(PassosDificil >= 50)
+                                            {
+                                                    system(LIMPARTELA);
+                                                    printf("\n##################### voce perdeu ###########################################\n");
+                                                    printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                    __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                     break;
+                                                    }
+                                     }
+                                    if((MapaDificil[Linha_Atual][Coluna_Atual] == PESSOA))
+                                    {       
+                                         PontosDificil++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosDificil);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosDificil);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                 break; 
+                                                
+                                     }
+                                 }
+            
+                                 if ((movimento == 'a') || (movimento == 'A'))  
+                                     {
+                                        Coluna_Atual = Coluna_Atual - 1;
+                                        /* Se não for chao ou grama ou saida ele volta pra posicao anterior */
+                                        if ((MapaDificil[Linha_Atual][Coluna_Atual] == PAREDE))
+                                         { 
+                                             Coluna_Atual = Coluna_Atual + 1;
+                                             __fpurge(stdin);
+                                             movimento = getch(); 
+                                             PassosDificil++;
+
+                                        if(PassosDificil >= 90)
+                                            {
+                                                    system(LIMPARTELA);
+                                                    printf("\n##################### voce perdeu ###########################################\n");
+                                                    printf("\npressione ENTER pra voltar ao menu principal\n");
+                                                    __fpurge(stdin);
+                                                     getch();
+                                                     system(LIMPARTELA);
+                                                     ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                    break;
+                                                    }
+                                        }
+
+                                        if((MapaDificil[Linha_Atual][Coluna_Atual] == PESSOA))
+                                        {      
+                                                PontosDificil++;
+                                                 system(LIMPARTELA);
+                                                 printf("\n\t🏆FIM DE JOGO🏆\n\t ");
+                                                 printf("\n🥉 sua pontuação foi de :%i🥉\n",PontosDificil);                                                
+                                                 printf("\n🥉 voce deu :%i passos🥉\n",PassosDificil);                                         
+                                                 printf("\nPressione ENTER para voltar\n");
+                                                 getchar();
+                                                 system(LIMPARTELA);
+                                                 ranking(dificuldade, op, PassosDificil, PontosDificil, NomeJogador);
+                                                 break; 
+                                                
+                                         }
+                                    }                     
+                         }
+                     }   
+
+void Escolher_dificuldade(char *NomeJogador){
+
+    int EscolhaDificuldade;
+
+    do{
+        system(LIMPARTELA);
+        //ESCOLHER DIFICULDADE DO JOGO
+        printf("\n##################### L A B I R I N T O #####################################\n");
+        printf("\n\n  (W)\n(A)+(D)\n  (S)\n"); /* Imprime as direcoes */
+        printf("\n");
+        printf("\n 1 - Modo Fácil (1 ponto)");
+        printf("\n 2 - Modo Intermédiario (2 pontos)");
+        printf("\n 3 - Modo Dificil (3 pontos)");
+        printf("\n 4 - Sair\n");
+        printf("\n#############################################################################\n");
+
+        __fpurge(stdin);
+        scanf("%i",&EscolhaDificuldade);
+
+        if(EscolhaDificuldade == 1){
+            dificuldade_facil(NomeJogador);
+            EscolhaDificuldade = 100;
+        }
+
+        if(EscolhaDificuldade == 2){
+            dificuldade_medio(NomeJogador);
+            EscolhaDificuldade = 100;
+        }
+
+        if(EscolhaDificuldade == 3){
+            dificuldade_dificil(NomeJogador);
+            EscolhaDificuldade = 100;
+        }
+
+        if(EscolhaDificuldade == 4){
+            break;
+        }
+
+
+    }while(EscolhaDificuldade < 1 || EscolhaDificuldade > 4);
+}
+void excluir(){
+
+    printf("\n##################### E X C L U I R #####################################\n");
+    system("clear");
+	
+	listar_cadastros();
+	
+	FILE *usuarios, *usuarios2;
+
+    char AltLogin[50];
+    char aa;
+    
+    
+    
+    printf("\n\nDigite O Login para excluir: ");
+    printf("> ");
+    __fpurge(stdin);
+    fgets(AltLogin,20,stdin);
+    
+    usuarios = fopen("user.bin","r+b");
+    usuarios2 = fopen("user2.bin","w+b");
+    
+    
+    while( fread(&usuario, sizeof(User), 1, usuarios) == 1){
+    	
+    	aa = 's';
+        
+        if(strcmp(AltLogin, usuario.login) != 0){
+            fwrite(&usuario, sizeof(User), 1, usuarios2);
+        }
+        
+        else{
+            printf("Login ----: %s\n", usuario.login);
+            printf("Senha ----: %s\n", usuario.senha);
+            printf("Modo usuario ----: " );
+            
+            if(usuario.admin == 1){
+            	printf("Administrador\n\n\t\t[ERRO] NAO EH POSSIVEL EXCLUIR O ADMINISTRADOR\n");
+            	fwrite(&usuario, sizeof(User), 1, usuarios2);
+            	
+			}
+            if(usuario.admin == 2){
+            	printf("Usuario\n");
+            	
+	            printf("Quer Excluir Mesmo Esse Usuario? S/N ");
+	            printf("\n> ");
+	            __fpurge(stdin);
+	            scanf("%c", &aa);
+	            
+	        	if(aa == 's'){
+	            	printf("[OK] Usuario excluido com sucesso");
+	            }
+	            else if(aa == 'n'){
+	            	fwrite(&usuario, sizeof(User), 1, usuarios2);
+	            	printf("[OK] Usuario nao foi excluido");
+	        	}
+	        	else{
+	        		printf("[ERRO] opcao errada, tente novamente");
+	        	}
+			}
+        }
+    }
+    
+    fclose(usuarios);
+   	fclose(usuarios2);
+   	
+    remove("user.bin");
+    rename("user2.bin","user.bin");
+
+    printf("\n#########################################################################\n");
+    getchar();
+}
+void listar_cadastros(){
+    
+    system("clear");
+	FILE *usuarios = fopen("user.bin","rb");
+	
+	rewind(usuarios);
+	
+	if(usuarios == NULL){
+	 	printf("\n\n\t\t\t**********************************\n");
+	 	printf("\t\t\tERRO!!! NAO EXISTE NENHUM CADASTRO\n");
+	 	printf("\t\t\t**********************************\n");
+	}
+	
+	else{
+		while(fread(&usuario, sizeof(User), 1, usuarios)==1){
+            printf("Login -------: %s", usuario.login);
+            printf("Senha -------: %s", usuario.senha);
+            printf("Modo --------: ");
+            if(usuario.admin == 1){
+            	printf("Administrador\n\n");
+			}
+            if(usuario.admin == 2){
+            	printf("Usuario\n\n");
+            }
+        }	
+	}
+	
+    printf("\n\n\n\t##############");
+    printf("\tAPERTE ENTER");
+    printf("  ##############");
+
+	fclose(usuarios);
+    getch();
+    getchar();
+	
+}
+void apagar_ranking(){
+
+    char c;
+
+    system("clear");
+	FILE *ranking = fopen("rank.bin","wb");
+	
+	if(ranking == NULL){
+		printf("\n\n");
+		printf("\t\t[ERRO] Não há Ranking para ser removido");
+        __fpurge(stdin);
+		scanf("%c", &c);
+	}
+	else{
+		remove("ranking.bin");
+		printf("\n\n");
+		printf("\t\t[OK] Ranking resetado com sucesso");
+		__fpurge(stdin);
+		scanf("%c", &c);
+	}
+	
+	fclose(ranking);
+} 
+void ranking(int dificuldade, int op, int passos, int pontos, char *NomeJogador){
+
+    char c, d;
+    FILE *ranking;
+
+    ranking = fopen("rank.bin", "a+b");
+
+
+
+    if(op == 2){
+        if(dificuldade == 1){
+            if(passos >= 50){
+                fprintf(ranking,"\n### PERDEU ###\n");
+                fprintf(ranking,"Nome ------------: %s", NomeJogador);
+                fprintf(ranking,"Dificuldade -----: Facil\n");
+                fprintf(ranking,"Pontos ----------: %i\n", pontos);
+            }
+            else{
+                fprintf(ranking,"\n### GANHOU ###\n");
+                fprintf(ranking,"Nome ------------: %s", NomeJogador);
+                fprintf(ranking,"Dificuldade -----: Facil\n");
+                fprintf(ranking,"Pontos ----------: %i\n", pontos+1);
+            }
+        }
+        if(dificuldade == 2){
+            if(passos >= 65){
+                fprintf(ranking,"\n### PERDEU ###\n");
+                fprintf(ranking,"Nome ------------: %s", NomeJogador);
+                fprintf(ranking,"Dificuldade -----: Medio\n");
+                fprintf(ranking,"Pontos ----------: %i\n", pontos);
+            }
+            else{
+                fprintf(ranking,"\n### GANHOU ###\n");
+                fprintf(ranking,"Nome ------------: %s", NomeJogador);
+                fprintf(ranking,"Dificuldade -----: Medio\n");
+                fprintf(ranking,"Pontos ----------: %i\n", pontos+1);
+            }
+        }
+        if(dificuldade == 3){
+            if(passos >= 90){
+                fprintf(ranking,"\n### PERDEU ###\n");
+                fprintf(ranking,"Nome ------------: %s", NomeJogador);
+                fprintf(ranking,"Dificuldade -----: Dificil\n");
+                fprintf(ranking,"Pontos ----------: %i\n", pontos);
+            }
+            else{
+                fprintf(ranking,"\n### GANHOU ###\n");
+                fprintf(ranking,"Nome ------------: %s", NomeJogador);
+                fprintf(ranking,"Dificuldade -----: Dificil\n");
+                fprintf(ranking,"Pontos ----------: %i\n", pontos+1);
+            }
+        }
+        
+
+        fprintf(ranking,"Passos ----------: %i\n", passos);
+
+        fprintf(ranking,"_____________________________________________________________________\n");
+
+        fclose(ranking);
+
+    }
+
+    ranking = fopen("rank.bin", "rb");
+		
+        puts(" ____________________________________________________________________");
+        puts("|  ****************************************************************  |");
+        puts("|  *************************    RANKING    ************************  |");
+        puts("|  ****************************************************************  |");
+
+
+        
+        while( !feof(ranking) ){                         
+            c = getc(ranking);                           
+            printf("%c",c);                              
+        }       
+
+    
+
+     fclose(ranking);
+				
+	puts("\n\nPressione ENTER para voltar ao menu");
+	
+    __fpurge(stdin);
+	scanf("%c", &d);
+				
+	system("clear");
+  
+  
+  
+}    
+        
